@@ -3,7 +3,7 @@ import pytest
 from app.switchboard import Switchboard
 from app.users import ForeignUser, LocalUser
 
-
+#проверка создания правильных пользователей по номеру
 def test_register_call_creates_local_and_foreign_users() -> None:
     switchboard = Switchboard()
 
@@ -17,6 +17,7 @@ def test_register_call_creates_local_and_foreign_users() -> None:
     assert active_call.receiver.id == 2
 
 
+# количество АКТИВНЫХ звонков
 def test_register_call_counts_active_calls() -> None:
     switchboard = Switchboard()
 
@@ -30,6 +31,7 @@ def test_register_call_counts_active_calls() -> None:
     assert switchboard.get_active_calls_count() == 2
 
 
+#проверка количества BORDER_CALLS
 def test_register_call_counts_calls_between_local_and_foreign_users() -> None:
     switchboard = Switchboard()
 
@@ -45,3 +47,29 @@ def test_register_call_counts_calls_between_local_and_foreign_users() -> None:
 
     assert switchboard.get_active_calls_count() == 3
     assert switchboard.get_cross_border_calls_count() == 1
+
+
+def test_userid_is_not_int_should_return_exception() -> None:
+    with pytest.raises(TypeError, match="User id must be int"):
+        LocalUser(id="1", fullname="John", phone="+71234567890")
+
+
+def test_user_fullname_is_not_str_should_return_exception() -> None:
+    with pytest.raises(TypeError, match="User fullname must be str"):
+        LocalUser(id=1, fullname=123, phone="+71234567890")
+
+
+def test_user_fullname_is_empty_should_return_exception() -> None:
+    with pytest.raises(ValueError, match="User fullname cannot be empty"):
+        LocalUser(id=1, fullname="", phone="+71234567890")
+
+
+def test_user_phone_is_not_str_should_return_exception() -> None:
+    with pytest.raises(TypeError, match="User phone must be str"):
+        LocalUser(id=1, fullname="John Doe", phone=1234567890)
+
+
+def test_user_phone_is_empty_should_return_exception() -> None:
+    with pytest.raises(ValueError, match="User phone cannot be empty"):
+        LocalUser(id=1, fullname="John Doe", phone="")
+
