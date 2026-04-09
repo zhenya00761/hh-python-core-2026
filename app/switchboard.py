@@ -27,17 +27,29 @@ class Switchboard:
 
     def register_call(self, raw_call: str) -> ActiveCall:
 
+        if not isinstance(raw_call, str):
+            raise TypeError('Входные данные должны быть типом str')
+
         all_info = raw_call.split(",")
+        if len(all_info) != 6:
+            raise ValueError('Введенные данные не соответствуют, требуется 6 элементов')
+
+        try:
+            caller_id = int(all_info[0])
+            receiver_id = int(all_info[3])
+        except ValueError:
+            raise ValueError('id должен быть числом')
+
 
         if all_info[2].startswith("+7"):
-            caller = LocalUser(int(all_info[0]), all_info[1], all_info[2])
+            caller = LocalUser(caller_id, all_info[1], all_info[2])
         else:
-            caller = ForeignUser(int(all_info[0]), all_info[1], all_info[2])
+            caller = ForeignUser(caller_id, all_info[1], all_info[2])
 
         if all_info[5].startswith("+7"):
-            receiver = LocalUser(int(all_info[3]), all_info[4], all_info[5])
+            receiver = LocalUser(receiver_id, all_info[4], all_info[5])
         else:
-            receiver = ForeignUser(int(all_info[3]), all_info[4], all_info[5])
+            receiver = ForeignUser(receiver_id, all_info[4], all_info[5])
 
         call = ActiveCall(caller, receiver)
 
@@ -50,8 +62,10 @@ class Switchboard:
 
         return call
 
+
     def get_active_calls_count(self) -> int:
         return self._active_calls_count
+
 
     def get_cross_border_calls_count(self) -> int:
         return self._cross_border_calls_count
