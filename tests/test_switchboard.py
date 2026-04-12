@@ -116,3 +116,32 @@ def test_receiver_id_is_not_integer() -> None:
     switchboard = Switchboard()
     with pytest.raises(ValueError, match="id должен быть числом"):
         switchboard.register_call("1,Ivan D,+71234567,xyz,John D,+11234567")
+
+def test_user_fullname_is_empty_register_call() -> None:
+    switchboard = Switchboard()
+    with pytest.raises(ValueError, match='Поле "Имя Фамилия" не должно быть пустым'):
+        switchboard.register_call("1,,+71234567,2,John D,+11234567")
+
+
+def test_user_fullname_with_digits_register_call() -> None:
+    switchboard = Switchboard()
+    with pytest.raises(ValueError, match='Поле "Имя Фамилия" должно состоять только из букв'):
+        switchboard.register_call("1,Ivan123 D,+71234567,2,John D,+11234567")
+
+
+def test_phone_is_empty_register_call() -> None:
+    switchboard = Switchboard()
+    with pytest.raises(ValueError, match='Номер телефона не должен быть пустым'):
+        switchboard.register_call("1,Ivan D,,2,John D,+11234567")
+
+
+def test_phone_without_plus_register_call() -> None:
+    switchboard = Switchboard()
+    with pytest.raises(ValueError, match='Номер телефона должен начинаться с'):
+        switchboard.register_call("1,Ivan D,71234567,2,John D,+11234567")
+
+
+def test_phone_with_letters_register_call() -> None:
+    switchboard = Switchboard()
+    with pytest.raises(ValueError, match='Номер телефона должен содержать только цифры после'):
+        switchboard.register_call("1,Ivan D,+7A1234567,2,John D,+11234567")
